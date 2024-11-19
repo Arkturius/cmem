@@ -1,12 +1,12 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   cm_access.c                                        :+:      :+:    :+:   //
+//   cm_chunk_utils.c                                   :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/09/27 01:42:35 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/07 20:55:37 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 18:02:55 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,10 +20,10 @@ void	*cm_chunk_at(t_cm_chunk *chunk_ptr, uint32_t index)
 	struct s_cm_chunk	*chunk;
 
 	chunk = (struct s_cm_chunk *)chunk_ptr;
-	while (index >= chunk->size && chunk->next)
+	while (index >= chunk->size && cm_chunk_next(chunk))
 	{
 		index -= chunk->size;
-		chunk = chunk->next;
+		chunk = cm_chunk_next(chunk);
 	}
 	if (index >= chunk->size)
 		return (NULL);
@@ -43,9 +43,9 @@ uint32_t	cm_chunk_index(t_cm_chunk *chunk_ptr, void *elem)
 		offset = (uintptr_t)elem - (uintptr_t)chunk;
 		while (offset > sizeof(struct s_cm_chunk))
 		{
-			if (!chunk->next)
+			chunk = cm_chunk_next(chunk);
+			if (!chunk)
 				return ((uint32_t)-1);
-			chunk = chunk->next;
 			offset = (uintptr_t)elem - (uintptr_t)chunk;
 		}
 		index = (uintptr_t)elem - (uintptr_t)&chunk->data;

@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/06 19:23:01 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/07 20:00:51 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 18:08:27 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -27,18 +27,23 @@ uint32_t	cm_djb2(const char *key)
 	return (hash);
 }
 
-t_cm_htable	*cm_htable_init(uint32_t capacity)
+t_cm_htable	*cm_htable_init(uint32_t capacity, void *ptr)
 {
 	struct s_cm_htable	*htable;
 
 	if (!capacity)
 		return (NULL);
-	htable = malloc(sizeof(struct s_cm_htable));
+	htable = ptr;
+	if (!ptr)
+		htable = malloc(sizeof(struct s_cm_htable));
 	if (htable)
 	{
 		htable->size = 0;
-		htable->capacity = cm_twos_power_raise(capacity);
-		htable->entries = malloc(CM_HTABLE_MAX_CAP * sizeof(struct s_cm_entry));
+		htable->capacity = cm_pow2next(capacity);
+		htable->entries = (struct s_cm_entry *)
+			((uint8_t *)htable) + sizeof(struct s_cm_htable);
+		if (!ptr)
+			htable->entries = malloc(htable->capacity * sizeof(struct s_cm_entry));
 		if (!htable->entries)
 		{
 			free(htable);
@@ -63,8 +68,11 @@ void	cm_htable_clear(t_cm_htable *htable_ptr, uint32_t flags)
 		i = 0;
 		while (i < htable->capacity)
 			free(htable->entries[i++].key);
-		free(htable->entries);
-		free(htable);
+		if (!(flags & CM_CLEAR_STATIC))
+		{
+			free(htable->entries);
+			free(htable);
+		}
 	}
 	if (flags & CM_CLEAR_NULL && !(flags & CM_CLEAR_FREE))
 		cm_memset(htable, 0, sizeof(uint32_t));

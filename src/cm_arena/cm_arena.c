@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/11/07 18:50:22 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/08 19:07:10 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/18 14:50:47 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -128,10 +128,10 @@ void	*cm_arena_alloc(t_cm_arena *arena_ptr, uint64_t size)
 
 	arena = (struct s_cm_arena *)arena_ptr;
 	ptr = NULL;
-	if (arena && size && !(size >> 24))
+	if (arena && size > 0 && !(size >> 24))
 	{	
 		head = (t_cm_block *)((uintptr_t)arena + arena->size);
-		offset = 32 - ((32 + size) & 31);
+		offset = 32 - (size & 31);
 		head->size = size + offset;
 		head->usable = size;
 		ptr = (void *)((uintptr_t)head + sizeof(t_cm_block));

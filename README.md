@@ -60,7 +60,8 @@ cm_chunk_destroy(chunk);
 ## Data chunks
 - Simple Constructor and Destructor.
 - Memory-aligned push, pop and alloc.
-- Linkage of new chunk for more space.
+- Linking of new chunk for more space.
+- Static linking in chunk_arrays. (Use CM_CHUNK_SIZE to declare)
 - Free list for memory reusage.
 
 ### Example
@@ -79,7 +80,7 @@ int	main(void)
     size_t      i;
 
     // Init the chunk
-    floats = cm_chunk_init(sizeof(float));
+    floats = cm_chunk_init(sizeof(float), NULL, 0);
 
     i = 0;
 
@@ -104,7 +105,6 @@ int	main(void)
 - Simple Constructor and Destructor.
 - Memory-Aligned push, pop and alloc.
 - Free list for memory reusage.
-- ***(TODO)*** Repair iterators.
 
 ```c
 #define CM_ARENA_IMPLEMENTATION

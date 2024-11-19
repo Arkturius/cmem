@@ -6,7 +6,7 @@
 #    By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 17:09:56 by rgramati          #+#    #+#              #
-#    Updated: 2024/11/07 20:22:50 by rgramati         ###   ########.fr        #
+#    Updated: 2024/11/19 18:13:49 by rgramati         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,14 +21,18 @@ SRC_DIR		:=	src
 
 OBJS_DIR	:=	build
 
-SRCS		:=	cm_chunk/cm_chunk.c		\
-				cm_chunk/cm_links.c		\
-				cm_chunk/cm_access.c	\
-				cm_arena/cm_arena.c		\
-				cm_htable/cm_htable.c	\
-				cm_limg/cm_limg.c		\
+SRCS		:=	cm_chunk/cm_chunk.c			\
+				cm_chunk/cm_links.c			\
+				cm_chunk/cm_chunk_utils.c	\
+											\
+				cm_arena/cm_arena.c			\
+											\
+				cm_htable/cm_htable.c		\
+				cm_htable/cm_htable_utils.c	\
+											\
+				cm_limg/cm_limg.c			\
+											\
 				utils.c
-				# cm_arena/cm_arena.c		\
 
 SRCS		:=	$(addprefix $(SRC_DIR)/, $(SRCS))
 
@@ -98,7 +102,7 @@ fclean:					clean
 
 test:					all $(TOBJS)
 	@$(CC) -o $(LIBNAME)_test $(TOBJS) $(LIBNAME).a $(COPTS) $(CFLAGS)
-	@./$(LIBNAME)_test
+	# @./$(LIBNAME)_test
 
 re:			fclean all
 

@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/08 18:03:50 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/07 18:38:37 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 18:38:33 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -19,16 +19,23 @@ t_cm_chunk	*cm_chunk_next(t_cm_chunk *chunk_ptr)
 {
 	struct s_cm_chunk	*chunk;
 
-	chunk = (struct s_cm_chunk *)chunk_ptr;
-	return (chunk->next);
+	chunk = chunk_ptr;
+	if ((uint64_t)chunk->next > CM_CHUNK_LINK_MAX)
+		return (chunk->next);
+	return (NULL);
 }
 
-void	cm_chunk_link(t_cm_chunk *chunk_ptr)
+t_cm_chunk	*cm_chunk_link(t_cm_chunk *chunk_ptr)
 {
 	struct s_cm_chunk	*chunk;
+	void				*ptr;
 
-	chunk = (struct s_cm_chunk *)chunk_ptr;
-	chunk->next = cm_chunk_init(chunk->alignment);
+	chunk = chunk_ptr;
+	ptr = NULL;
+	if (chunk->link > 0)
+		ptr = ((uint8_t *)chunk) + sizeof(struct s_cm_chunk);
+	chunk->next = cm_chunk_init(chunk->alignment, ptr, chunk->link);
+	return (chunk->next);
 }
 
 uint32_t	cm_chunk_size(t_cm_chunk *chunk_ptr)
@@ -36,12 +43,12 @@ uint32_t	cm_chunk_size(t_cm_chunk *chunk_ptr)
 	struct s_cm_chunk	*chunk;
 	uint32_t			size;
 
-	chunk = (struct s_cm_chunk *)chunk_ptr;
+	chunk = chunk_ptr;
 	size = 0;
 	while (chunk)
 	{
 		size += chunk->size;
-		chunk = chunk->next;
+		chunk = cm_chunk_next(chunk);
 	}
 	return (size);
 }

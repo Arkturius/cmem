@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/06 00:36:49 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/07 20:55:28 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 19:20:06 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,25 +15,11 @@
 
 # include <stdint.h>
 
-# define CM_CHUNK_DATA_CAP	4032
+# define CM_CHUNK_SIZE		4096
+# define CM_CHUNK_DATA_CAP	4064
+# define CM_CHUNK_LINK_MAX	16
 
 /* ************************************************************************** */
-
-/**
- * @struct	s_cm_iter		Describes a memroy chunk iterator
- *
- * @void *		(it)		Pointer to the current element.
- * @void *		(start)		Start iterator, points to the start of chunk->data.
- * @void *		(end)		End iterator, points to the last element adress.
- * @uint32_t	(index)		Index of the current element.
- */
-struct s_cm_iter
-{
-	void		*it;
-	void		*start;
-	void		*end;
-	uint32_t	index;
-};
 
 /**
  * @struct	s_chunk			Describes a memory chunk
@@ -42,6 +28,13 @@ struct s_cm_iter
  * @uint32_t	(size)		Actual size of the chunk.
  * @uint32_t	(alignment)	Alignment factor of the concerned data.
  * @uint32_t	(elem_size)	Element size.
+ *
+ * @s_flist		(free_list)	Free list head pointer.
+ * @union
+ *  @s_cm_chunk	(next)		Next linked chunk address.
+ *  @uint64_t	(link)		Allowed number of static links.
+ *
+ * @uint8t[]	(data)		Data space.
  */
 struct s_cm_chunk
 {
@@ -50,8 +43,11 @@ struct s_cm_chunk
 	uint32_t			alignment;
 	uint32_t			elem_size;
 	struct s_flist		*free_list;
-	struct s_cm_iter	iterator;
-	struct s_cm_chunk	*next;
+	union
+	{
+		struct s_cm_chunk	*next;
+		uint64_t			link;
+	};
 	uint8_t				data[CM_CHUNK_DATA_CAP];
 };
 

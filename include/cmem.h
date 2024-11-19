@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/06 00:35:57 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/07 21:27:55 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 18:52:45 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -15,7 +15,6 @@
 
 # include <stdint.h>
 # include <unistd.h>
-# include <stdlib.h>
 
 # ifdef CM_INCLUDE_ALL
 #  ifndef CM_CHUNK_IMPLEMENTATION
@@ -44,6 +43,10 @@
 #  include <../src/cm_htable/cm_htable.h>
 # endif
 
+# ifdef CM_LIMG_IMPLEMENTATION
+#  include <../src/cm_limg/cm_limg.h>
+# endif
+
 # define CM_BIT_COUNT	"\
 \x00\x00\x01\x00\x02\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00\
 \x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\
@@ -67,6 +70,7 @@ enum	e_clear_flags
 {
 	CM_CLEAR_ZERO = 1 << 8,
 	CM_CLEAR_NULL = 1 << 9,
+	CM_CLEAR_STATIC = 1 << 10,
 	CM_CLEAR_FREE = CM_CLEAR_ZERO | CM_CLEAR_NULL | 1 << 11
 };
 
@@ -84,19 +88,20 @@ struct s_flist
 # ifdef CM_CHUNK_IMPLEMENTATION
 
 typedef void				t_cm_chunk;
-typedef struct s_cm_iter	t_cm_iterator;
 
 /**
  * @brief	Init a memory chunk.
  *
  * @param		(elem_size)	Element size, pass sizeof(elem) to setup correctly.
+ * @param		(ptr)		If not null, use this as address.
+ * @param		(link)		Allowed number of links in a chunk array.
  *
  * @returns	A pointer to a memory chunk.
  */
 t_cm_chunk
-*cm_chunk_init(uint32_t elem_size);
+*cm_chunk_init(uint32_t elem_size, void *ptr, uint64_t link);
 
-/**
+	/**
  * @brief	Perform clear operations on a memory chunk.
  *
  * @param		(chunk)		Chunk pointer.
@@ -132,14 +137,13 @@ void
 *cm_chunk_push(t_cm_chunk *chunk_ptr, void *elem, uint32_t elem_size);
 
 /**
- * @brief	Free a pointer from a memory chunk.
+ * @brief	Free space from a memory chunk using an index.
  *
  * @param		(chunk)		Chunk pointer.
- * @param		(elem)		Pointer to free, should be a pointer returned 
- *							by cm_chunk_(alloc/push).
+ * @param		(index)		Index of the element to pop.
  */
 void
-cm_chunk_pop(t_cm_chunk *chunk_ptr, void *elem);
+cm_chunk_pop(t_cm_chunk *chunk_ptr, uint32_t index);
 
 /**
  * @brief	Get the element at a certain index on a memory chunk.
@@ -176,42 +180,11 @@ uint32_t
 cm_chunk_size(t_cm_chunk *chunk_ptr);
 
 /**
- * @brief	Get the next element from iteration.
- *
- * @param		(chunk)		Chunk pointer.
- *
- * @returns	An opaque pointer to the element.
- * @note	This used with a NULL current iterator set it to start iterator.
- */
-void
-*cm_chunk_it_next(t_cm_chunk *chunk_ptr);
-
-/**
- * @brief	Get the start iterator from a chunk.
- *
- * @param		(chunk)		Chunk pointer.
- *
- * @returns	An opaque pointer to the start iterator.
- */
-void
-*cm_chunk_it_start(t_cm_chunk *chunk_ptr);
-
-/**
- * @brief	Get the end iterator from a chunk.
- *
- * @param		(chunk)		Chunk pointer.
- *
- * @returns	An opaque pointer to the end iterator.
- */
-void
-*cm_chunk_it_end(t_cm_chunk *chunk_ptr);
-
-/**
  * @brief	Returns the next chunk pointer.
  *
  * @param		(chunk)		Chunk pointer.
  *
- * @return	Next chunk pointer, NULL if no linking
+ * @return	Next chunk pointer, NULL if no linking | static linking
  */
 t_cm_chunk	*cm_chunk_next(t_cm_chunk *chunk_ptr);
 
@@ -219,8 +192,10 @@ t_cm_chunk	*cm_chunk_next(t_cm_chunk *chunk_ptr);
  * @brief	Allocates new linked chunk for additional space.
  *
  * @param		(chunk)		Chunk pointer.
+ * 
+ * @return	Next chunk pointer.
  */
-void	cm_chunk_link(t_cm_chunk *chunk_ptr);
+t_cm_chunk	*cm_chunk_link(t_cm_chunk *chunk_ptr);
 
 # endif	//	CM_CHUNK_IMPLEMENTATION
 
@@ -244,8 +219,16 @@ cm_arena_clear(t_cm_arena *arena_ptr, uint32_t flags);
 
 typedef void				t_cm_htable;
 
+/**
+ * @brief	Init a Hash table
+ *
+ * @param		(capacity)	Number of elements;
+ * @param		(ptr)		If not null, use this as address.
+ *
+ * @returns	A pointer to a Hash table
+ */
 t_cm_htable
-*cm_htable_init(uint32_t capacity);
+*cm_htable_init(uint32_t capacity, void *ptr);
 
 void
 cm_htable_clear(t_cm_htable *htable_ptr, uint32_t flags);
@@ -259,13 +242,17 @@ void
 void
 *cm_htable_remove(t_cm_htable *htable_ptr, const char *key);
 
+void
+*cm_htable_at(t_cm_htable *htable_ptr, uint32_t index);
+
+void
+*cm_htable_get_data(void *entry_ptr);
+
 #endif
 
 // ************************************************************************** //
 
 #ifdef CM_LIMG_IMPLEMENTATION
-
-# include <../src/cm_limg/cm_limg.h>
 
 typedef enum e_open_types
 {
@@ -284,7 +271,7 @@ cm_bmp(const char *filename, uint32_t **data_ptr, uint64_t flags);
 // ************************************************************************** //
 
 uint32_t
-cm_twos_power_raise(uint32_t x);
+cm_pow2next(uint32_t x);
 
 uint32_t
 cm_min(uint32_t a, uint32_t b);

@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/06 21:58:01 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/08 18:51:19 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 19:08:33 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -76,67 +76,20 @@ void	cm_arena_free(t_cm_arena *arena_ptr, void *ptr);
 
 void	cm_unit_test_chunk(void)
 {
-	struct s_cm_arena	*ptr;
+	int					dummy[60] = {0, 1, 2, 3, 4, 5, 6, [58] = 7};
+	int					dummy2[60];
 
-	ptr = cm_arena_init();
+	struct s_cm_chunk	chunks[3];
+	struct s_cm_chunk	*current;
 
-	void *test = cm_arena_alloc(ptr, 56);
+	current = cm_chunk_init(240, &chunks[0], 3);
 
-	void *test2 = cm_arena_alloc(ptr, 2);
-	
-	// void *test3 = cm_arena_alloc(ptr, 39);
-	
-	cm_arena_display(ptr);
-	
-	cm_arena_free(ptr, test);
-	
-	cm_arena_display(ptr);
-	
-	cm_arena_free(ptr, test2);
-	
-	cm_arena_display(ptr);
-	
-	// cm_arena_free(ptr, test3);
+	for (uint32_t i = 0; i < (current->capacity * 1) + 4; ++i)
+	{
+		cm_chunk_push(current, &dummy, sizeof(dummy));
+	}
 
-	// cm_arena_display(ptr);
-
-	cm_arena_clear(ptr, CM_CLEAR_FREE);
-
-	// struct s_cm_chunk	*ptr;
-	//
-	// PRINTF(
-	// 	CM_ANSI_BOLD CM_COLOR_TITLE
-	// 	" [Data chunks]\n"
-	// 	CM_ANSI_RESET
-	// );
-	// ptr = cm_chunk_init(32);
-	// cm_test_result(
-	// 	assert_chunk_settings(ptr, 0, 32, sizeof(ptr->data) / 32, 32),
-	// 	"cm_chunk_init()"
-	// );
-	// // cm_chunk_clear(ptr, CM_CLEAR_NULL);
-	// // cm_test_result(
-	// // 	assert_chunk_settings(ptr, 0, 0, 0, 0),
-	// // 	"cm_chunk_clear() with CM_CLEAR_NULL"
-	// // );
-	//
-	// void	*exes[10];
-	//
-	// for (int i = 0; i < 10; i++)
-	// {
-	// 	exes[i] = cm_chunk_push(ptr, &(t_dummy32){(void *)(uint64_t)i, 0, 0, 0}, sizeof(t_dummy32));
-	// }
-	//
-	// cm_chunk_pop(ptr, exes[5]);
-	// void	*test1 = ptr->free_list;
-	// cm_chunk_pop(ptr, exes[8]);
-	// void	*test2 = ptr->free_list;
-	// cm_chunk_pop(ptr, exes[0]);
-	// void	*test3 = ptr->free_list;
-	//
-	// assert(test3 == cm_chunk_push(ptr, &(t_dummy32){0}, sizeof(t_dummy32)));
-	// assert(test2 == cm_chunk_push(ptr, &(t_dummy32){0}, sizeof(t_dummy32)));
-	// assert(test1 == cm_chunk_push(ptr, &(t_dummy32){0}, sizeof(t_dummy32)));
-	// assert(ptr->free_list == NULL);
-	
+	cm_chunk_pop(current, 16);
+	cm_memset(dummy2, -1, sizeof(dummy2));
+	cm_chunk_push(current, &dummy2, sizeof(dummy2));
 }

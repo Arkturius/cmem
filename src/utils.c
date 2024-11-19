@@ -20,7 +20,7 @@ uint32_t	cm_min(uint32_t a, uint32_t b)
 	return (b);
 }
 
-uint32_t	cm_twos_power_raise(uint32_t x)
+uint32_t	cm_pow2next(uint32_t x)
 {
 	x += !x;
 	x--;

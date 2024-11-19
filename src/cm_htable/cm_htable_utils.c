@@ -1,36 +1,40 @@
 // ************************************************************************** //
 //                                                                            //
 //                                                        :::      ::::::::   //
-//   cm_test_htable.c                                   :+:      :+:    :+:   //
+//   cm_htable_utils.c                                  :+:      :+:    :+:   //
 //                                                    +:+ +:+         +:+     //
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
-//   Created: 2024/10/07 00:46:52 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/19 18:09:53 by rgramati         ###   ########.fr       //
+//   Created: 2024/11/17 22:47:31 by rgramati          #+#    #+#             //
+//   Updated: 2024/11/17 23:40:30 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
-
-#include <assert.h>
-#include <stdint.h>
-
-#include <cmemtest.h>
 
 #ifndef CM_HTABLE_IMPLEMENTATION
 # define CM_HTABLE_IMPLEMENTATION
 #endif
 #include <cmem.h>
 
-void	cm_unit_test_htable(void)
+void	*cm_htable_at(t_cm_htable *htable_ptr, uint32_t index)
 {
-	// struct s_cm_htable	*ptr;
-	//
-	// ptr = cm_htable_init(45);
-	// (void)ptr;
-	//
-	// cm_htable_set(ptr, "Mateo", (void *)&"Le portugais");
-	// cm_htable_set(ptr, "Killian", (void *)&"L'autiste");
-	//
-	// printf("%s\n", (char *)cm_htable_get(ptr, "Mateo"));
-	//
-	// cm_htable_clear(ptr, CM_CLEAR_FREE);
+	struct s_cm_htable	*htable;
+	void				*ptr;
+
+	htable = htable_ptr;
+	ptr = NULL;
+	if (htable && index < htable->capacity)
+		ptr = &htable->entries[index];
+	return (ptr);
+}
+
+void	*cm_htable_get_data(void *entry_ptr)
+{
+	struct s_cm_entry	*entry;
+	void				*ptr;
+
+	entry = entry_ptr;
+	ptr = NULL;
+	if (entry)
+		ptr = entry->data;
+	return (ptr);
 }
