@@ -48,16 +48,23 @@ t_cm_chunk	*cm_chunk_init(uint32_t elem_size, void *ptr, uint64_t link)
 void	cm_chunk_clear(t_cm_chunk *chunk_ptr, uint32_t flags)
 {
 	struct s_cm_chunk	*chunk;
+	t_cm_chunk			*tmp;
 
 	chunk = (struct s_cm_chunk *)chunk_ptr;
-	if (chunk->next)
-		cm_chunk_clear(chunk->next, flags);
+	tmp = cm_chunk_next(chunk);
+	if (tmp == chunk + 1)
+		cm_chunk_clear(tmp, flags);
+	else if (tmp)
+		cm_chunk_clear(tmp, flags & ~CM_CLEAR_STATIC);
 	if (!chunk)
 		return ;
 	if (flags & CM_CLEAR_NULL)
 		cm_memset(chunk, 0, 32);
 	if ((flags & CM_CLEAR_FREE) == CM_CLEAR_FREE)
-		free(chunk);
+	{
+		if (!(flags & CM_CLEAR_STATIC))
+			free(chunk);
+	}
 }
 
 void	*cm_chunk_alloc(t_cm_chunk *chunk_ptr)

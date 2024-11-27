@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/06 00:35:57 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/19 18:52:45 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/24 13:43:18 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -247,6 +247,9 @@ void
 
 void
 *cm_htable_get_data(void *entry_ptr);
+
+uint32_t
+cm_djb2(const char *key);
 
 #endif
 

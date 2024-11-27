@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/10/08 18:03:50 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/19 18:38:33 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 21:32:04 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,7 +20,7 @@ t_cm_chunk	*cm_chunk_next(t_cm_chunk *chunk_ptr)
 	struct s_cm_chunk	*chunk;
 
 	chunk = chunk_ptr;
-	if ((uint64_t)chunk->next > CM_CHUNK_LINK_MAX)
+	if (chunk && (uint64_t)chunk->next > CM_CHUNK_LINK_MAX)
 		return (chunk->next);
 	return (NULL);
 }
@@ -31,6 +31,8 @@ t_cm_chunk	*cm_chunk_link(t_cm_chunk *chunk_ptr)
 	void				*ptr;
 
 	chunk = chunk_ptr;
+	if (!chunk)
+		return (NULL);
 	ptr = NULL;
 	if (chunk->link > 0)
 		ptr = ((uint8_t *)chunk) + sizeof(struct s_cm_chunk);

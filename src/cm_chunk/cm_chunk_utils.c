@@ -6,7 +6,7 @@
 //   By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+        //
 //                                                +#+#+#+#+#+   +#+           //
 //   Created: 2024/09/27 01:42:35 by rgramati          #+#    #+#             //
-//   Updated: 2024/11/19 18:02:55 by rgramati         ###   ########.fr       //
+//   Updated: 2024/11/19 21:33:05 by rgramati         ###   ########.fr       //
 //                                                                            //
 // ************************************************************************** //
 
@@ -20,6 +20,8 @@ void	*cm_chunk_at(t_cm_chunk *chunk_ptr, uint32_t index)
 	struct s_cm_chunk	*chunk;
 
 	chunk = (struct s_cm_chunk *)chunk_ptr;
+	if (!chunk)
+		return (NULL);
 	while (index >= chunk->size && cm_chunk_next(chunk))
 	{
 		index -= chunk->size;
