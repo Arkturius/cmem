@@ -6,7 +6,7 @@
 #    By: rgramati <rgramati@student.42angouleme.fr  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/27 22:57:06 by rgramati          #+#    #+#              #
-#    Updated: 2024/11/27 23:02:50 by rgramati         ###   ########.fr        #
+#    Updated: 2024/12/02 18:58:34 by rgramati         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,11 @@ CM_ARENA_SRC	:=	cm_arena.c			\
 
 CM_LIMG_SRC		:=	cm_limg.c			\
 
+CM_MISC_SRC		:=	utils.c
+
 CM_CHUNK_SRC	:=	$(addprefix $(CM_CHUNK_DIR)/, $(CM_CHUNK_SRC))
 CM_HTABLE_SRC	:=	$(addprefix $(CM_HTABLE_DIR)/, $(CM_HTABLE_SRC))
 CM_ARENA_SRC	:=	$(addprefix $(CM_ARENA_DIR)/, $(CM_ARENA_SRC))
 CM_LIMG_SRC		:=	$(addprefix $(CM_LIMG_DIR)/, $(CM_LIMG_SRC))
 
-SRCS			:=	$(CM_CHUNK_SRC) $(CM_HTABLE_SRC) $(CM_ARENA_SRC) $(CM_LIMG_SRC)
+SRCS			:=	$(CM_CHUNK_SRC) $(CM_HTABLE_SRC) $(CM_ARENA_SRC) $(CM_LIMG_SRC) $(CM_MISC_SRC)
